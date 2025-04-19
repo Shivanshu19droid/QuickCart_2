@@ -26,8 +26,23 @@ export const AppContextProvider = (props) => {
     setProducts(productsDummyData);
   };
 
-  const fetchUserData = async () => {
-    setUserData(userDummyData);
+    const fetchUserData = async () => {
+        try {
+            if (user.publicMetadata.role === "seller") {
+              setIsSeller(true);
+            }
+            const token = await getToken()
+            const { data } = await axios.get('/api/user/data'.{ headers: { Authorization: `Bearer ${token}` } });
+            if (data.success) {
+                setUserData(data.user)
+                setCartItems(data.user.cartItems)
+            } else {
+                toast.error(data.message)
+            }
+            
+        } catch (error) {
+            toast.error(error.message)
+        }
   };
 
   const addToCart = async (itemId) => {
@@ -75,9 +90,11 @@ export const AppContextProvider = (props) => {
     fetchProductData();
   }, []);
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+    useEffect(() => {
+        if (user) {
+          fetchUserData();
+      }
+  }, [user]);
 
   const value = {
     user,
