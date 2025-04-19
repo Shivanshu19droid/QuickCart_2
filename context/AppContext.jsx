@@ -26,23 +26,25 @@ export const AppContextProvider = (props) => {
     setProducts(productsDummyData);
   };
 
-    const fetchUserData = async () => {
-        try {
-            if (user.publicMetadata.role === "seller") {
-              setIsSeller(true);
-            }
-            const token = await getToken()
-            const { data } = await axios.get('/api/user/data'.{ headers: { Authorization: `Bearer ${token}` } });
-            if (data.success) {
-                setUserData(data.user)
-                setCartItems(data.user.cartItems)
-            } else {
-                toast.error(data.message)
-            }
-            
-        } catch (error) {
-            toast.error(error.message)
-        }
+  const fetchUserData = async () => {
+    try {
+      
+      if (user.publicMetadata.role === "seller") {
+        setIsSeller(true);
+      }
+      const token = await getToken();
+      const { data } = await axios.get("/api/user/data", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setUserData(data.user);
+        setCartItems(data.user.cartItems);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const addToCart = async (itemId) => {
@@ -90,10 +92,10 @@ export const AppContextProvider = (props) => {
     fetchProductData();
   }, []);
 
-    useEffect(() => {
-        if (user) {
-          fetchUserData();
-      }
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
   }, [user]);
 
   const value = {
@@ -119,3 +121,5 @@ export const AppContextProvider = (props) => {
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
   );
 };
+
+export default AppContext;
