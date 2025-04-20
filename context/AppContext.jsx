@@ -2,7 +2,7 @@
 import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 export const AppContext = createContext();
 
@@ -29,7 +29,7 @@ export const AppContextProvider = (props) => {
   const fetchUserData = async () => {
     try {
       if (user.publicMetadata.role === "seller") {
-        setIsSeller(true)
+        setIsSeller(true);
       }
       const token = await getToken();
       const { data } = await axios.get("/api/user/data", {
