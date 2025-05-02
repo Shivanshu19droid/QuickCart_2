@@ -22,21 +22,16 @@ const ProductList = () => {
         setLoading(false)
       } else {
         toast.error(data.message)
-        
       }
-      
     } catch (error) {
       toast.error(error.message)
     }
-    setProducts(productsDummyData)
-    setLoading(false)
   }
 
   useEffect(() => {
     if (user){
       fetchSellerProduct();
     }
-  
   }, [user])
 
   return (

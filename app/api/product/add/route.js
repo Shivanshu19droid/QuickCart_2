@@ -17,7 +17,7 @@ export async function POST(request) {
         const isSeller = await authSeller(userId)
 
         if (!isSeller) {
-            return NextResponse.json({ success: false, message: 'not authorised'})
+            return NextResponse.json({ success: false, message: 'not authorised' })
         }
 
         const formData = await request.formData()
@@ -59,7 +59,7 @@ export async function POST(request) {
 
         await connectDB()
         const newProduct = await Product.create({
-            userId,name,description,category,pricec:Number(price),offerPrice:Number(offerPrice),image,date: Date.now()
+            userId, name, description, category, pricec: Number(price), offerPrice: Number(offerPrice), image, date: Date.now()
         })
 
         return NextResponse.json({ success: true, message: 'Upload successful', newProduct })

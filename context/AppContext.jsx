@@ -12,8 +12,11 @@ export const useAppContext = () => {
 
 export const AppContextProvider = (props) => {
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY
-    const router = useRouter()
+  const currency = process.env.NEXT_PUBLIC_CURRENCY
+  const router = useRouter()
+  
+  const { user } = useUser()
+  const { getToken } = useAuth()
 
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(false);
@@ -21,7 +24,16 @@ export const AppContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
 
   const fetchProductData = async () => {
-    setProducts(productsDummyData);
+    try {
+      const { data } = await axios.get('/api/product/list')
+      if (data.success) {
+        setProducts(data.products)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const fetchUserData = async () => {
@@ -43,18 +55,6 @@ export const AppContextProvider = (props) => {
       toast.error(error.message);
     }
   };
-
-  const addToCart = async (itemId) => {
-    let cartData = structuredClone(cartItems);
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
-    }
-
-    const fetchUserData = async () => {
-        setUserData(userDummyData)
-    }
 
     const addToCart = async (itemId) => {
 
@@ -95,12 +95,9 @@ export const AppContextProvider = (props) => {
                 const token = await getToken()
                 await axios.post('/api/cart/update', { cartData }, { headers: { Authorization: `Bearer ${token}` } })
                 toast.success('Cart Updated')
-
             } catch (error) {
                 toast.error(error.message)
-                
             }
-
         }
     }
 
@@ -136,6 +133,7 @@ export const AppContextProvider = (props) => {
     }, [])
 
     const value = {
+      user,getToken,
         currency, router,
         isSeller, setIsSeller,
         userData, fetchUserData,
@@ -144,12 +142,6 @@ export const AppContextProvider = (props) => {
         addToCart, updateCartQuantity,
         getCartCount, getCartAmount
     }
-
-    return (
-        <AppContext.Provider value={value}>
-            {props.children}
-        </AppContext.Provider>
-    )
 }
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
